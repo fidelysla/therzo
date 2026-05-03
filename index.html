@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0" />
+  <title>THERZO — Imán Térmico Portátil</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=DM+Sans:opsz,wght@9..40,200;9..40,300;9..40,400&display=swap" rel="stylesheet" />
+  <script type="module" src="https://unpkg.com/@splinetool/viewer@1.12.90/build/spline-viewer.js"></script>
+
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --cream:    #f7f3ee;
+      --warm:     #f0ebe3;
+      --sand:     #e4ddd4;
+      --mist:     #ddd7cf;
+      --ash:      #b5afa8;
+      --charcoal: #3a3632;
+      --ink:      #1e1c1a;
+      --accent:   #c8a882;
+      --cool:     #8fb8c8;
+      --hot:      #c8705a;
+      --r:        18px;
+      --r-lg:     28px;
+      --r-xl:     40px;
+    }
+
+    html { scroll-behavior: smooth; }
+    /* NO animations — everything static */
+
+    body {
+      background: var(--cream);
+      color: var(--charcoal);
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 300;
+      overflow-x: hidden;
+    }
+
+    /* ══ NAV ══════════════════════════════════════════════ */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 22px 52px;
+
+    }
+    nav.scrolled {
+      background: rgba(247,243,238,.8);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      box-shadow: 0 1px 0 rgba(0,0,0,.06);
+    }
+    .nav-logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.55rem; font-weight: 300;
+      letter-spacing: .28em; color: var(--ink);
+    }
+    .nav-links { display: flex; gap: 40px; list-style: none; }
+    .nav-links a {
+      font-size: .76rem; letter-spacing: .14em; text-transform: uppercase;
+      color: var(--charcoal); text-decoration: none;
+      opacity: .65;
+    }
+    .nav-links a:hover { opacity: 1; }
+    .nav-cta {
+      font-family: 'DM Sans', sans-serif;
+      font-size: .76rem; letter-spacing: .12em; text-transform: uppercase;
+      background: var(--ink); color: var(--cream);
+      border: none; padding: 11px 26px; border-radius: 100px;
+      cursor: pointer;
+    }
+    .nav-cta:hover { opacity: .82; transform: scale(1.02); }
+
+    /* ══ HERO ══════════════════════════════════════════════ */
+    #hero {
+      position: relative;
+      height: 100svh; min-height: 680px;
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
+    }
+    .spline-wrap {
+      position: absolute; inset: 0; z-index: 0;
+    }
+    spline-viewer { width: 100%; height: 100%; }
+
+    /* bottom gradient fade */
+    #hero::after {
+      content: '';
+      position: absolute; bottom: 0; left: 0; right: 0;
+      height: 220px;
+      background: linear-gradient(to bottom, transparent, var(--cream));
+      pointer-events: none; z-index: 2;
+    }
+
+    /* product name — top center */
+    .hero-headline {
+      position: absolute; top: 120px; left: 50%;
+      transform: translateX(-50%);
+      text-align: center; z-index: 3;
+      white-space: nowrap;
+    }
+    .hero-eyebrow {
+      font-size: .72rem; letter-spacing: .35em; text-transform: uppercase;
+      color: var(--ash); margin-bottom: 10px;
+    }
+    .hero-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(4rem, 6vw, 9rem);
+      font-weight: 300; line-height: .9;
+      color: var(--ink); letter-spacing: -.015em;
+    }
+
+    /* tagline + cards — bottom */
+    .hero-bottom {
+      position: absolute; bottom: 100px; left: 50%;
+      transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center; gap: 20px;
+      z-index: 3;
+    }
+    .hero-tagline {
+      font-size: clamp(.85rem, 1.4vw, 1rem);
+      color: var(--charcoal); letter-spacing: .12em;
+      opacity: .55;
+    }
+    .float-cards {
+      display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;
+    }
+    .fcard {
+      background: rgba(255,255,255,.48);
+      backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+      border: 1px solid rgba(255,255,255,.75);
+      border-radius: 100px; padding: 9px 20px;
+      font-size: .75rem; letter-spacing: .09em;
+      color: var(--charcoal);
+      display: flex; align-items: center; gap: 8px;
+      box-shadow: 0 4px 20px rgba(0,0,0,.05);
+    }
+    .dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+    .dot-cool { background: var(--cool); }
+    .dot-hot  { background: var(--hot); }
+    .dot-neu  { background: var(--accent); }
+
+    /* LED ring indicator */
+    .led-ring {
+      width: 52px; height: 52px; border-radius: 50%;
+      background: conic-gradient(var(--cool) 0deg 180deg, var(--hot) 180deg 360deg);
+      box-shadow: 0 0 18px rgba(143,184,200,.35), 0 0 18px rgba(200,112,90,.2);
+      opacity: .85;
+    }
+
+    .scroll-hint {
+      position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%);
+      z-index: 3; display: flex; flex-direction: column; align-items: center; gap: 7px;
+    }
+    .scroll-hint span { font-size: .65rem; letter-spacing: .22em; text-transform: uppercase; color: var(--ash); }
+    .scroll-line {
+      width: 1px; height: 36px;
+      background: linear-gradient(to bottom, var(--ash), transparent);
+    }
+
+    /* ══ CONTENT WRAPPER ══════════════════════════════════ */
+    .page-wrap { max-width: 1240px; margin: 0 auto; }
+
+    /* ══ SECTION COMMONS ══════════════════════════════════ */
+    .section { padding: 100px 52px; }
+    .section-label {
+      font-size: .7rem; letter-spacing: .32em; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 18px;
+    }
+    .section-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2.2rem, 5vw, 4rem);
+      font-weight: 300; line-height: 1.08;
+      color: var(--ink); margin-bottom: 20px;
+    }
+    .section-body {
+      font-size: clamp(.88rem, 1.2vw, 1rem);
+      color: var(--ash); line-height: 1.8;
+      max-width: 500px;
+    }
+
+    /* ══ FEATURE CARDS ════════════════════════════════════ */
+    .feat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 18px; margin-top: 64px;
+    }
+    .feat-card {
+      background: var(--warm);
+      border: 1px solid var(--sand);
+      border-radius: var(--r-lg);
+      padding: 38px 32px;
+    }
+    .feat-icon {
+      width: 46px; height: 46px; border-radius: 15px;
+      background: var(--sand); display: flex; align-items: center;
+      justify-content: center; font-size: 1.25rem; margin-bottom: 22px;
+    }
+    .feat-card h3 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.4rem; font-weight: 400;
+      color: var(--ink); margin-bottom: 10px;
+    }
+    .feat-card p { font-size: .87rem; color: var(--ash); line-height: 1.7; }
+
+    /* ══ SPLIT SECTIONS ═══════════════════════════════════ */
+    .split {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 88px; align-items: center;
+      padding: 80px 52px;
+    }
+    .split.rev { direction: rtl; }
+    .split.rev > * { direction: ltr; }
+
+    .split-img {
+      aspect-ratio: 3/4; border-radius: var(--r-xl);
+      overflow: hidden; position: relative;
+    }
+    .img-inner {
+      width: 100%; height: 100%;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 14px;
+    }
+    .img-big { font-size: 5rem; opacity: .28; }
+    .img-sub { font-size: .72rem; letter-spacing: .18em; text-transform: uppercase; color: var(--ash); }
+
+    /* image bg themes */
+    .bg-ice    { background: linear-gradient(145deg, #daeef5 0%, #bfd8e5 100%); }
+    .bg-fire   { background: linear-gradient(145deg, #f5e0d8 0%, #e8c4b4 100%); }
+    .bg-stone  { background: linear-gradient(145deg, #eae5de 0%, #d8d1c8 100%); }
+    .bg-amber  { background: linear-gradient(145deg, #f0e0cc 0%, #e0cdb8 100%); }
+
+    /* pill */
+    .pill {
+      display: inline-flex; align-items: center; gap: 7px;
+      background: var(--sand); border-radius: 100px;
+      padding: 7px 18px; font-size: .74rem;
+      letter-spacing: .1em; text-transform: uppercase;
+      color: var(--charcoal); margin-bottom: 22px;
+    }
+    .pill-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+
+    /* temp pair */
+    .temp-pair { display: flex; gap: 14px; margin-top: 34px; }
+    .temp-block {
+      flex: 1; border-radius: var(--r); padding: 26px 20px;
+      text-align: center; border: 1px solid transparent;
+    }
+    .temp-block.ice  { background: linear-gradient(135deg, #e6f4f9, #cee5ef); border-color: rgba(143,184,200,.3); }
+    .temp-block.fire { background: linear-gradient(135deg, #f9ede8, #efd4c8); border-color: rgba(200,112,90,.2); }
+    .temp-num {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 3rem; font-weight: 300;
+      color: var(--ink); line-height: 1;
+    }
+    .temp-label { font-size: .7rem; letter-spacing: .16em; text-transform: uppercase; color: var(--ash); margin-top: 6px; }
+
+    /* use-cases chips */
+    .use-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 28px; }
+    .chip {
+      background: var(--sand); border-radius: 100px;
+      padding: 6px 16px; font-size: .76rem;
+      letter-spacing: .07em; color: var(--charcoal);
+    }
+
+    /* LED indicator block */
+    .led-block {
+      margin-top: 32px;
+      display: flex; align-items: center; gap: 20px;
+      background: var(--warm); border: 1px solid var(--sand);
+      border-radius: var(--r); padding: 20px 24px;
+    }
+    .led-demo {
+      width: 48px; height: 48px; border-radius: 50%; flex-shrink: 0;
+      background: conic-gradient(var(--cool) 0deg 180deg, var(--hot) 180deg 360deg);
+      box-shadow: 0 0 16px rgba(143,184,200,.4), 0 0 16px rgba(200,112,90,.25);
+    }
+    .led-desc { font-size: .82rem; color: var(--ash); line-height: 1.6; }
+    .led-desc strong { color: var(--charcoal); font-weight: 400; }
+
+    /* ══ SPECS ══════════════════════════════════════════ */
+    #specs-wrap {
+      background: var(--warm);
+      border-radius: var(--r-xl);
+      padding: 88px 72px;
+      margin: 0 52px 100px;
+    }
+    .specs-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      margin-top: 56px;
+      overflow: hidden;
+      border-radius: var(--r);
+      border: 1px solid var(--sand);
+    }
+    .spec-item {
+      padding: 30px 20px;
+      border-bottom: 1px solid var(--sand);
+      border-right: 1px solid var(--sand);
+    }
+    .spec-item:nth-child(4n) { border-right: none; }
+    .spec-item:nth-last-child(-n+4) { border-bottom: none; }
+    .spec-val {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.4rem; font-weight: 300; color: var(--ink);
+    }
+    .spec-key {
+      font-size: .7rem; letter-spacing: .13em; text-transform: uppercase;
+      color: var(--ash); margin-top: 5px;
+    }
+
+    /* ══ TECH BAR ═══════════════════════════════════════ */
+    .tech-bar {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 0; border: 1px solid var(--sand);
+      border-radius: var(--r-lg); overflow: hidden;
+      margin-top: 48px;
+    }
+    .tech-item {
+      padding: 32px 28px;
+      border-right: 1px solid var(--sand);
+    }
+    .tech-item:last-child { border-right: none; }
+    .tech-ico { font-size: 1.6rem; margin-bottom: 12px; }
+    .tech-name { font-family: 'Cormorant Garamond', serif; font-size: 1.25rem; color: var(--ink); }
+    .tech-desc { font-size: .8rem; color: var(--ash); margin-top: 4px; line-height: 1.5; }
+
+    /* ══ CTA ════════════════════════════════════════════ */
+    .cta-wrap {
+      background: var(--ink); border-radius: var(--r-xl);
+      padding: 120px 52px; text-align: center;
+      margin: 0 52px 100px;
+    }
+    .cta-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2.4rem, 6vw, 5rem);
+      font-weight: 300; color: var(--cream);
+      line-height: 1.05; margin-bottom: 20px;
+    }
+    .cta-sub { font-size: .95rem; color: var(--mist); line-height: 1.7; margin-bottom: 44px; }
+    .cta-btn {
+      display: inline-flex; align-items: center; gap: 12px;
+      background: var(--cream); color: var(--ink);
+      border: none; padding: 17px 38px; border-radius: 100px;
+      font-family: 'DM Sans', sans-serif; font-size: .82rem;
+      letter-spacing: .13em; text-transform: uppercase; cursor: pointer;
+    }
+    .arrow { display: inline-block; }
+    .cta-note { font-size: .72rem; color: var(--ash); margin-top: 20px; letter-spacing: .08em; }
+
+    /* ══ FOOTER ═════════════════════════════════════════ */
+    footer {
+      padding: 48px 52px;
+      display: flex; justify-content: space-between; align-items: center;
+      border-top: 1px solid var(--sand);
+    }
+    .ft-logo { font-family: 'Cormorant Garamond', serif; font-size: 1.25rem; letter-spacing: .22em; color: var(--ash); }
+    footer p { font-size: .7rem; color: var(--ash); letter-spacing: .07em; }
+
+    /* ══ RESPONSIVE ══════════════════════════════════════ */
+    @media (max-width: 820px) {
+      nav { padding: 18px 24px; }
+      .nav-links { display: none; }
+
+      .hero-headline { top: 100px; }
+      .hero-title { font-size: clamp(3.2rem, 15vw, 6rem); }
+
+      .section { padding: 56px 20px; }
+
+      .split { grid-template-columns: 1fr; gap: 32px; padding: 56px 20px; }
+      .split.rev { direction: ltr; }
+      .split-img { aspect-ratio: 5/3; border-radius: var(--r-lg); }
+
+      .feat-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+
+      #specs-wrap { padding: 40px 20px; margin: 0 16px 64px; border-radius: var(--r-lg); }
+      .specs-grid { grid-template-columns: repeat(2, 1fr); }
+      .spec-item { border-right: 1px solid var(--sand); border-bottom: 1px solid var(--sand); }
+      .spec-item:nth-child(4n) { border-right: 1px solid var(--sand); }
+      .spec-item:nth-child(2n) { border-right: none; }
+      .spec-item:nth-last-child(-n+4) { border-bottom: 1px solid var(--sand); }
+      .spec-item:nth-last-child(-n+2) { border-bottom: none; }
+      .spec-val { font-size: 1.8rem; }
+
+      .tech-bar { grid-template-columns: 1fr 1fr; }
+      .tech-item { border-right: 1px solid var(--sand); border-bottom: 1px solid var(--sand); }
+      .tech-item:nth-child(2n) { border-right: none; }
+      .tech-item:last-child { border-bottom: none; }
+
+      .cta-wrap { padding: 56px 24px; margin: 0 16px 64px; border-radius: var(--r-lg); }
+      footer { flex-direction: column; gap: 14px; text-align: center; padding: 36px 20px; }
+    }
+
+    @media (max-width: 480px) {
+      .feat-grid { grid-template-columns: 1fr; }
+      .tech-bar { grid-template-columns: 1fr; }
+      .tech-item { border-right: none; }
+      .float-cards { gap: 8px; padding: 0 12px; }
+      .fcard { padding: 8px 14px; font-size: .72rem; }
+      .hero-bottom { bottom: 70px; width: 100%; padding: 0 16px; }
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- ══ NAV ══════════════════════════════════════════════ -->
+<nav id="navbar">
+  <div class="nav-logo">THERZO</div>
+  <ul class="nav-links">
+    <li><a href="#como-funciona">Uso</a></li>
+    <li><a href="#tecnologia">Tecnología</a></li>
+    <li><a href="#specs-wrap">Especificaciones</a></li>
+  </ul>
+  <!-- <button class="nav-cta">Reservar</button> -->
+</nav>
+
+<!-- ══ HERO ══════════════════════════════════════════════ -->
+<section id="hero">
+  <div class="spline-wrap">
+    <spline-viewer
+      loading-anim-type="spinner-small-light"
+      url="https://prod.spline.design/6l8mWmlveCPi0jIf/scene.splinecode">
+    </spline-viewer>
+  </div>
+
+  <!-- name top -->
+  <div class="hero-headline">
+    <div class="hero-eyebrow">Imán térmico portátil</div>
+    <div class="hero-title">THERZO</div>
+  </div>
+
+  <!-- tagline + cards bottom -->
+  <div class="hero-bottom">
+    <div class="hero-tagline">Tu temperatura. Tu control.</div>
+    <!-- <div class="float-cards">
+      <div class="fcard"><span class="dot dot-cool"></span>Enfría</div>
+      <div class="fcard"><span class="dot dot-hot"></span>Calienta</div>
+      <div class="fcard"><span class="dot dot-neu"></span>Ultraligero</div>
+      <div class="fcard"><span class="dot dot-neu"></span>Portátil</div>
+      <div class="led-ring" title="LED: azul = frío · rojo = calor"></div>
+    </div> -->
+  </div>
+
+  <div class="scroll-hint">
+    <span>Scroll</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- ══ INTRO FEATURES ════════════════════════════════════ -->
+<div class="page-wrap">
+  <section class="section">
+    <div class="reveal">
+      <div class="section-label">Tecnología térmica personal</div>
+      <h2 class="section-title">Frío o calor.<br><em>Donde lo necesitas.</em></h2>
+      <p class="section-body">THERZO es un dispositivo termoeléctrico compacto que regula tu temperatura corporal local de forma discreta y precisa. Adhiérete, actívalo, olvídate del clima.</p>
+    </div>
+    <div class="feat-grid">
+      <div class="feat-card">
+        <div class="feat-icon">❄️</div>
+        <h3>Modo Frío</h3>
+        <p>Hasta 8 °C menos. Genera alivio térmico inmediato en días calurosos o durante actividad física intensa.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">☀️</div>
+        <h3>Modo Calor</h3>
+        <p>Hasta 8 °C más. Confort terapéutico localizado que alivia tensiones y combate el frío sin capas de ropa extra.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">🧲</div>
+        <h3>Sistema Magnético</h3>
+        <p>Imán de alta retención que se adhiere a cualquier prenda: suéteres, camisetas, chaquetas, ropa formal.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">🔋</div>
+        <h3>Batería Integrada</h3>
+        <p>Recargable por USB-C. Ligera, segura y de larga duración para acompañarte todo el día.</p>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ══ SPLIT: CÓMO SE USA ════════════════════════════════ -->
+<div id="como-funciona" class="page-wrap">
+  <div class="split">
+    <div>
+      <div class="pill"><span class="pill-dot"></span>Cómo se usa</div>
+      <h2 class="section-title">Ponlo.<br><em>Actívalo.</em><br>Siéntelo.</h2>
+      <p class="section-body">Coloca THERZO sobre la piel, debajo de cualquier prenda. Su forma circular y perfil delgado de 3.2 cm lo hacen completamente invisible. Un botón lateral selecciona frío o calor al instante.</p>
+      <div class="temp-pair">
+        <div class="temp-block ice">
+          <div class="temp-num">−8°</div>
+          <div class="temp-label">Modo frío</div>
+        </div>
+        <div class="temp-block fire">
+          <div class="temp-num">+8°</div>
+          <div class="temp-label">Modo calor</div>
+        </div>
+      </div>
+      <div class="use-chips" style="margin-top:24px;">
+        <span class="chip">Oficina</span>
+        <span class="chip">Viajes</span>
+        <span class="chip">Uso urbano</span>
+        <span class="chip">Ropa formal</span>
+        <span class="chip">Suéteres</span>
+        <span class="chip">Bajo la ropa</span>
+      </div>
+    </div>
+    <div class="split-img bg-ice">
+      <div class="img-inner">
+        <div class="img-big">🧊</div>
+        <div class="img-sub">Debajo de la ropa</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SPLIT: TAMAÑO COMPACTO -->
+  <div class="split rev">
+    <div>
+      <div class="pill"><span class="pill-dot"></span>Tamaño compacto</div>
+      <h2 class="section-title">Circular.<br><em>Discreto.</em><br>3.2 cm.</h2>
+      <p class="section-body">THERZO es redondo, ligero y minimalista. Diseñado para desaparecer bajo la ropa y notarse únicamente como confort. Cabe en cualquier bolsillo, se adhiere a cualquier tela.</p>
+    </div>
+    <div class="split-img bg-stone">
+      <div class="img-inner">
+        <div class="img-big">📏</div>
+        <div class="img-sub">Diseño circular · 3.2 cm</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ TECNOLOGÍA ════════════════════════════════════════ -->
+<div id="tecnologia" class="page-wrap">
+  <div class="split">
+    <div>
+      <div class="pill"><span class="pill-dot"></span>Tecnología Peltier</div>
+      <h2 class="section-title">Sin partes<br><em>móviles.</em><br>Sin ruido.</h2>
+      <p class="section-body">Basado en celdas termoeléctricas Peltier de segunda generación. Genera diferencial térmico instantáneo sin refrigerantes, silencioso y eficiente.</p>
+      <div class="led-block">
+        <div class="led-demo"></div>
+        <div class="led-desc">
+          <strong>LED indicador circular</strong><br>
+          Mitad azul = modo frío · Mitad rojo = modo calor. Sutil e integrado al diseño.
+        </div>
+      </div>
+    </div>
+    <div class="split-img bg-fire">
+      <div class="img-inner">
+        <div class="img-big">🔬</div>
+        <div class="img-sub">Módulo Peltier</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SPLIT: BATERÍA -->
+  <div class="split rev">
+    <div>
+      <div class="pill"><span class="pill-dot"></span>Batería recargable</div>
+      <h2 class="section-title">Recarga rápida.<br><em>Autonomía total.</em></h2>
+      <p class="section-body">Puerto USB-C integrado. Batería de ciclos prolongados diseñada para resistir el uso diario. Carga rápida para que nunca te quedes sin confort térmico.</p>
+    </div>
+    <div class="split-img bg-amber">
+      <div class="img-inner">
+        <div class="img-big">⚡</div>
+        <div class="img-sub">USB-C · Carga rápida</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ COMPONENTES INTERNOS ══════════════════════════════ -->
+<div class="page-wrap">
+  <section class="section">
+    <div class="reveal">
+      <div class="section-label">Componentes</div>
+      <h2 class="section-title">Ingeniería en cada milímetro.</h2>
+    </div>
+    <div class="tech-bar">
+      <div class="tech-item">
+        <div class="tech-ico">🔋</div>
+        <div class="tech-name">Batería integrada</div>
+        <div class="tech-desc">Recargable, segura y de ciclos prolongados</div>
+      </div>
+      <div class="tech-item">
+        <div class="tech-ico">❄️☀️</div>
+        <div class="tech-name">Módulo térmico</div>
+        <div class="tech-desc">Celdas Peltier de 2.ª generación</div>
+      </div>
+      <div class="tech-item">
+        <div class="tech-ico">⚡</div>
+        <div class="tech-name">Circuito de control</div>
+        <div class="tech-desc">Gestión inteligente de temperatura</div>
+      </div>
+      <div class="tech-item">
+        <div class="tech-ico">🔘</div>
+        <div class="tech-name">Botón físico</div>
+        <div class="tech-desc">Selector lateral frío / calor</div>
+      </div>
+      <div class="tech-item">
+        <div class="tech-ico">🔌</div>
+        <div class="tech-name">Puerto USB-C</div>
+        <div class="tech-desc">Carga universal y rápida</div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ══ SPECS ══════════════════════════════════════════════ -->
+<div id="specs-wrap">
+  <div class="reveal">
+    <div class="section-label">Especificaciones técnicas</div>
+    <h2 class="section-title">Diseñado con precisión.</h2>
+  </div>
+  <div class="specs-grid">
+    <div class="spec-item">
+      <div class="spec-val">3.2cm</div>
+      <div class="spec-key">Grosor</div>
+    </div>
+    <div class="spec-item">
+      <div class="spec-val">Ø 62mm</div>
+      <div class="spec-key">Diámetro</div>
+    </div>
+    <div class="spec-item">
+      <div class="spec-val">±8°C</div>
+      <div class="spec-key">Rango térmico</div>
+    </div>
+    <div class="spec-item">
+      <div class="spec-val">USB-C</div>
+      <div class="spec-key">Puerto de carga</div>
+    </div>
+    <div class="spec-item">
+      <div class="spec-val">2 modos</div>
+      <div class="spec-key">Frío / Calor</div>
+    </div>
+    <div class="spec-item">
+      <div class="spec-val">1 botón</div>
+      <div class="spec-key">Control físico</div>
+    </div>
+    <div class="spec-item">
+      <div class="spec-val">LED</div>
+      <div class="spec-key">Indicador circular</div>
+    </div>
+    <div class="spec-item">
+      <div class="spec-val">Magnético</div>
+      <div class="spec-key">Sistema de fijación</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ BENEFICIOS DIARIOS ════════════════════════════════ -->
+<div class="page-wrap">
+  <section class="section">
+    <div class="reveal">
+      <div class="section-label">Beneficios diarios</div>
+      <h2 class="section-title">Para cada momento<br><em>de tu día.</em></h2>
+    </div>
+    <div class="feat-grid">
+      <div class="feat-card">
+        <div class="feat-icon">🏢</div>
+        <h3>Oficina</h3>
+        <p>Ajusta tu temperatura sin molestar a nadie. Discreción total bajo ropa formal o casual.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">✈️</div>
+        <h3>Viajes</h3>
+        <p>En aviones, trenes o auto. THERZO se adapta a cualquier clima sin importar el entorno.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">🌆</div>
+        <h3>Uso urbano</h3>
+        <p>Camina, trabaja, descansa. Tu confort térmico personal siempre activo y siempre invisible.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">💆</div>
+        <h3>Bienestar</h3>
+        <p>Calor terapéutico para tensiones musculares o frío refrescante para recuperación activa.</p>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ══ CTA ════════════════════════════════════════════════ -->
+<!-- <div class="cta-wrap">
+  <div class="cta-title">Siente la diferencia.</div>
+  <p class="cta-sub">THERZO está disponible para reserva anticipada.<br>Sé de los primeros en experimentar el confort térmico personal.</p>
+  <button class="cta-btn">Reservar ahora <span class="arrow">→</span></button>
+  <div class="cta-note">Envíos estimados Q3 2025 · Reserva sin compromiso</div>
+</div> -->
+
+<!-- ══ FOOTER ══════════════════════════════════════════════ -->
+<footer>
+  <div class="ft-logo">THERZO</div>
+  <p>© 2025 Therzo Technologies. Todos los derechos reservados.</p>
+</footer>
+
+<script>
+  const nav = document.getElementById('navbar');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 60);
+  }, { passive: true });
+</script>
+</body>
+</html>
